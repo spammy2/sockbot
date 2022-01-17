@@ -6,19 +6,20 @@ config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: false }
+	{ logSocketMessages: true }
 );
 
 const help = {
 	like: "Likes a post",
 	unlike: "Unlike a post",
 	ping: "Sends back pong.",
-	post: "Posts a message",
-	echo: "Sends a message",
-	reply: "Replies with a message",
+	post: "sb!post {message} Posts a message",
+	echo: "sb!echo {message} Sends a message",
+	reply: "sb!reply {message} Replies with a message",
 	disconnect: "{perms>=1} Stop listening for commands in current post.",
 	help: "Shows a list of commands or info on a specific command",
-	about: "Gives opinion on certain things.",
+	about: "sb!about {topic} Gives opinion on certain things.",
+	hook: "sb!hook {id} Listens to a post the same way adding +SockBot to your post would.",
 };
 
 const commands: Record<
@@ -54,10 +55,30 @@ const commands: Record<
 			}
 		},
 	},
+	follow: {
+		func: async (chat, body) => {
+			const user = await client.getUserFromUsername(body);
+			if (!user) return chat.reply("User not found")
+			user.follow().then(() => {
+				chat.reply(`Followed ${user!.username}`);
+			});
+		},
+	},
+	unfollow: {
+		func: async (chat, body) => {
+			const user = await client.getUserFromUsername(body);
+			if (!user) return chat.reply("User not found")
+			user?.unfollow().then(() => {
+				chat.reply(`Unfollowed ${user!.username}`);
+			});
+		},
+	},
 	reply: {
 		func: (chat, body) => {
 			if (body === "") {
-				chat.reply("Cannot reply with an empty message. Ex: sb!reply test");
+				chat.reply(
+					"Cannot reply with an empty message. Ex: sb!reply test"
+				);
 			} else {
 				chat.reply(body);
 			}
@@ -75,21 +96,24 @@ const commands: Record<
 	help: {
 		func: (chat, body) => {
 			if (body === "") {
-				chat.reply(Object.keys(help).join(", "));
+				chat.reply(
+					Object.keys(help).join(", ") +
+						". You can use sb!help {command} to get more info."
+				);
 			} else if (body in help) {
 				chat.reply(help[body as keyof typeof help]);
 			} else {
-				chat.reply(`not found: "${help}"`)
+				chat.reply(`not found: "${body}"`);
 			}
 		},
 	},
 	hook: {
-		func: async (chat, body)=>{
+		func: async (chat, body) => {
 			let post = await client.getPost(body);
 			if (post) {
 				hookPost(post);
 			}
-		}
+		},
 	},
 	about: {
 		func: (chat, body) => {
@@ -114,7 +138,7 @@ function handleCommand(chat: Chat, command: string) {
 	const args = command.match(/([A-Za-z]+)(.*)/);
 	if (args) {
 		const cmd = args[1].toLowerCase();
-		const body = args[2];
+		const body = args[2].substring(1);
 
 		const commandObj = commands[cmd];
 		if (commandObj) {
@@ -158,7 +182,9 @@ client.onPost = (post) => {
 		hookPost(post);
 	}
 	if (post.text.match(/sb\![a-zA-Z0-9]/)) {
-		post.chat("SockBot does not support running commands via posts. Append +SockBot to your post first, then run command as a chat..");
+		post.chat(
+			"SockBot does not support running commands via posts. Append +SockBot to your post first, then run command as a chat.."
+		);
 	}
 };
 
@@ -170,4 +196,4 @@ client.onReady = async () => {
 	//hookPost(post);
 };
 
-console.log("running sockbot")
+console.log("running sockbot");
