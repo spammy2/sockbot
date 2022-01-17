@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/spammy2/sockbot",
+  "main":"out/index.js",
+  "dependencies": {
+    "dotenv": "^14.1.0",
+    "photop-client": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.8"
+  }
+}
