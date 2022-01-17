@@ -17,6 +17,8 @@ const help = {
 	echo: "sb!echo {message} Sends a message",
 	reply: "sb!reply {message} Replies with a message",
 	disconnect: "{perms>=1} Stop listening for commands in current post.",
+	follow: "sb!follow {username} Follows a user by their username",
+	unfollow: "sb!unfollow {username} Unfollows a user by their username",
 	help: "Shows a list of commands or info on a specific command",
 	about: "sb!about {topic} Gives opinion on certain things.",
 	hook: "sb!hook {id} Listens to a post the same way adding +SockBot to your post would.",
