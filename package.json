@@ -3,7 +3,7 @@
   "main": "out/index.js",
   "dependencies": {
     "dotenv": "^14.1.0",
-    "photop-client": "^1.2.1"
+    "photop-client": "^1.3.2"
   },
   "devDependencies": {
     "@types/node": "^17.0.8"

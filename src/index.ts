@@ -59,8 +59,12 @@ const commands: Record<
 		func: async (chat, body) => {
 			const user = await client.getUserFromUsername(body);
 			if (!user) return chat.reply("User not found")
-			user.follow().then(() => {
-				chat.reply(`Followed ${user!.username}`);
+			user.follow().then((success) => {
+				if (success) {
+					chat.reply(`Followed ${user!.username}`);
+				} else {
+					chat.reply(`Failed to follow ${user!.username}. (May already be following)`)
+				}
 			});
 		},
 	},
@@ -68,8 +72,12 @@ const commands: Record<
 		func: async (chat, body) => {
 			const user = await client.getUserFromUsername(body);
 			if (!user) return chat.reply("User not found")
-			user?.unfollow().then(() => {
-				chat.reply(`Unfollowed ${user!.username}`);
+			user.follow().then((success) => {
+				if (success) {
+					chat.reply(`Followed ${user!.username}`);
+				} else {
+					chat.reply(`Failed to unfollow ${user!.username}. (May already not be following)`)
+				}
 			});
 		},
 	},
