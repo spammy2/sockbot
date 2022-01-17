@@ -1,1 +1,1 @@
-worker: tsc && node .
+worker: npm run start
