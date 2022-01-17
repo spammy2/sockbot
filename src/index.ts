@@ -6,7 +6,7 @@ config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: true }
+	{ logSocketMessages: false }
 );
 
 const help = {
@@ -174,7 +174,7 @@ function handleCommand(chat: Chat, command: string) {
 
 async function hookPost(post: Post) {
 	post.chat("SockBot is listening. Run sb!help for a list of commands");
-	const setBack = await post.connect(20000, () => {
+	const setBack = await post.connect(60000, () => {
 		post.chat("SockBot disconnected. Reason: Inactivity");
 	});
 	post.onChat = (chat) => {
