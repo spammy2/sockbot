@@ -2,7 +2,8 @@
   "repository": "https://github.com/spammy2/sockbot",
   "main": "out/index.js",
   "scripts": {
-    "start": "tsc && node ."
+    "start": "node .",
+    "postinstall": "tsc"
   },
   "dependencies": {
     "dotenv": "^14.1.0",
