@@ -6,7 +6,7 @@ config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: false }
+	{ logSocketMessages: true }
 );
 
 const help = {
@@ -181,7 +181,7 @@ async function hookPost(post: Post) {
 	});
 	post.onChat = (chat) => {
 		setBack();
-		if (chat.text.startsWith("sb!")) {
+		if (chat.text.startsWith("sb!") && chat.user!==client.user) {
 			handleCommand(chat, chat.text.substring(3).trim());
 		}
 	};
