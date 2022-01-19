@@ -6,7 +6,7 @@ config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: true }
+	{ logSocketMessages: false }
 );
 
 const help = {
@@ -22,12 +22,38 @@ const help = {
 	help: "Shows a list of commands or info on a specific command",
 	about: "sb!about {topic} Gives opinion on certain things.",
 	hook: "sb!hook {id} Listens to a post the same way adding +SockBot to your post would.",
+	joingroup: "sb!joingroup {inviteid} Invites the bot to a group."
 };
 
 const commands: Record<
 	string,
 	{ func: (chat: Chat, body: string) => void; perms?: number }
 > = {
+	joingroup: {
+		func: async (chat, body) => {
+			try {
+				const group = await client.joinGroup(body);
+				const post = await group.post("SockBot has joined!")
+				post.chat("You can invite me with sb!joingroup on a post that I am listening. (Not this one)");
+				group.onPost = onPost;
+				chat.reply(`Joined ${group.name}!`);
+			} catch (e) {
+				chat.reply(String(e));
+			}
+		}
+	},
+	leavegroup: {
+		func: async (chat, body) => {
+			const group = client.groups[body];
+			if (group && group.members[client.userid!]) {
+				await group.leave();
+				chat.reply("Left group")
+				return;
+			}
+			chat.reply("Not part of group.")
+		},
+		perms: 1,
+	},
 	like: {
 		func: (chat) => {
 			chat.post.like();
@@ -187,23 +213,33 @@ async function hookPost(post: Post) {
 	};
 }
 
-client.onPost = (post) => {
-	if (post.text.match(/\+SockBot/)) {
+function onPost(post: Post){
+	if (post.author.username === "Placedropper") {
+		post.chat("Cringe")
+		return;
+	}
+
+	if (post.text.match(/\+SockBot/i)) {
 		hookPost(post);
 	}
+	
 	if (post.text.match(/sb\![a-zA-Z0-9]/)) {
 		post.chat(
 			"SockBot does not support running commands via posts. Append +SockBot to your post first, then run command as a chat.."
 		);
 	}
-};
+}
+
+//client.onPost = onPost;
 
 client.onReady = async () => {
 	console.log("READY!");
-
+	//client.groups["61c7637eebb7436adbfcdc11"].onPost = onPost;
+	client.onPost = onPost;
 	//const post = await client.post("Hello. I am SockBot. I am an actual bot, and I actually work.");
 	//const post = client.getPostFromCache("61c6dffae1e6417b595d63d1")
 	//hookPost(post);
 };
 
 console.log("running sockbot");
+console.log(client);
