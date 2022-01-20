@@ -1,6 +1,7 @@
 // why am i putting sockbot.ts in source? because i dont know where to put it so it just gonna go in as well
 import { Chat, Client, Post } from "photop-client";
 import { config } from "dotenv";
+import { group } from "console";
 
 config();
 
@@ -13,7 +14,7 @@ const help = {
 	like: "Likes a post",
 	unlike: "Unlike a post",
 	ping: "Sends back pong.",
-	post: "sb!post {message} Posts a message",
+	post: "sb!post {message} Posts a message. Posts to the same group if ran inside one.",
 	echo: "sb!echo {message} Sends a message",
 	reply: "sb!reply {message} Replies with a message",
 	disconnect: "{perms>=1} Stop listening for commands in current post.",
@@ -22,7 +23,8 @@ const help = {
 	help: "Shows a list of commands or info on a specific command",
 	about: "sb!about {topic} Gives opinion on certain things.",
 	hook: "sb!hook {id} Listens to a post the same way adding +SockBot to your post would.",
-	joingroup: "sb!joingroup {inviteid} Invites the bot to a group."
+	joingroup: "sb!joingroup {inviteid} Invites the bot to a group.",
+	postglobal: "sb!postglobal {message} Posts to global regardless of whether command was ran inside a group.",
 };
 
 const commands: Record<
@@ -69,9 +71,18 @@ const commands: Record<
 			chat.reply("Pong");
 		},
 	},
+	postglobal: {
+		func: (chat, body)=>{
+			client.post(body);
+		}
+	},
 	post: {
 		func: (chat, body) => {
-			client.post(body);
+			if (chat.group) {
+				chat.group.post(body)
+			} else {
+				client.post(body);
+			}
 		},
 	},
 	echo: {
