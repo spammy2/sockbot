@@ -247,9 +247,6 @@ client.onReady = async () => {
 	console.log("READY!");
 	//client.groups["61c7637eebb7436adbfcdc11"].onPost = onPost;
 	client.onPost = onPost;
-	for (const [groupid, group] of Object.entries(client.groups)) {
-		group.onPost = onPost;
-	}
 	//const post = await client.post("Hello. I am SockBot. I am an actual bot, and I actually work.");
 	//const post = client.getPostFromCache("61c6dffae1e6417b595d63d1")
 	//hookPost(post);
