@@ -37,7 +37,6 @@ const commands: Record<
 				
 				const post = await group.post("SockBot has joined!")
 				post.chat("You can invite me with sb!joingroup on a post that I am listening. (Not this one)");
-				group.onPost = onPost;
 				chat.reply(`Joined ${group.name}!`);
 			} catch (e) {
 				chat.reply(String(e));
