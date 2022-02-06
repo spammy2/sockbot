@@ -1,13 +1,12 @@
 // why am i putting sockbot.ts in source? because i dont know where to put it so it just gonna go in as well
 import { Chat, Client, Post } from "photop-client";
 import { config } from "dotenv";
-import { group } from "console";
 
 config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: false }
+	{ logSocketMessages: true }
 );
 
 const help = {
@@ -35,6 +34,7 @@ const commands: Record<
 		func: async (chat, body) => {
 			try {
 				const group = await client.joinGroup(body);
+				
 				const post = await group.post("SockBot has joined!")
 				post.chat("You can invite me with sb!joingroup on a post that I am listening. (Not this one)");
 				group.onPost = onPost;

@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "dotenv": "^14.1.0",
-    "photop-client": "^2.2.7"
+    "photop-client": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.8",
