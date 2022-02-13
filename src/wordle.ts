@@ -7,7 +7,7 @@ const guesses_map = Object.fromEntries([...answers, ...guesses].map(e=>[e, true]
 
 export function Wordle(post: Post, client: Client){
 	if (post.text.match(/\+Wordle/)) {
-		post.chat(`Playing Wordle with ${post.author.username}. Other players may suggest answers but may not play the game itself. Enter a 5 letter word to start. G: Green. Y: Yellow. N: Grey`);
+		post.chat(`Playing Wordle with ${post.author.username}. Other players may suggest answers but may not play the game itself. Enter a 5 letter word to start.`);
 		let word = answers[Math.floor(Math.random()*answers.length)];
 		return (chat: Chat)=>{
 			if (chat.user === post.author) {
@@ -23,20 +23,20 @@ export function Wordle(post: Post, client: Client){
 							let letter = guess[i];
 							let index = word_arr.indexOf(letter);
 							if (index === -1) {
-								result.push("N");
+								result.push("_");
 							} else if (index === i) {
-								result.push("G");
+								result.push(letter.toUpperCase());
 							} else {
-								result.push("Y");
+								result.push(letter.toLowerCase());
 								word_arr[i] = undefined;
 							}
 						}
-						chat.reply(result.join(""));
+						post.chat(result.join(""));
 					} else {
-						chat.reply("That's not a word, silly");
+						post.chat("That's not a word, silly");
 					}
 				} else if (chat.text === "wordle.answer") {
-					chat.reply(`Answer: '${word}' (This is a cheat command that gives you the answer. You don't lose the game but running it ruins the fun.)`)
+					post.chat(`Answer: '${word}' (This is a cheat command that gives you the answer. You don't lose the game but running it ruins the fun.)`)
 				}
 			}
 		}
