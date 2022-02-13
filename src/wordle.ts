@@ -34,6 +34,7 @@ export function Wordle(post: Post, client: Client){
 								result.push("_");
 							} else if (index === i) {
 								result.push(letter.toUpperCase());
+								word_arr[i] = undefined;
 							} else {
 								result.push(letter.toLowerCase());
 								word_arr[i] = undefined;
