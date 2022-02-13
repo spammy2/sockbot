@@ -14,7 +14,7 @@ export function Wordle(post: Post, client: Client){
 				if (chat.text.match(/^[A-Za-z]{5}$/i)) { // validate that it is a 5 letter word.
 					const guess = chat.text.toLowerCase();
 					if (guess===word) {
-						chat.reply("YOU WIN. (You can play again.)");
+						post.chat("YOU WIN. (You can play again.)");
 						word = answers[Math.floor(Math.random()*answers.length)];
 					} else if (guesses_map[guess]) { // validate that it IS a word
 						const word_arr = word.split("") as (undefined | string)[]; // mutable array made for each chat;
