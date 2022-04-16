@@ -1,3 +1,9 @@
+// small problem with this ver of wordle
+// if the word is jewel
+// and you put trees
+// the 4th wont be capitalized because it thinks that the 4th e of jewel belongs to the third e of trees.
+// you can fix this by doing a first pass with letters in the correct positions but im too lazy
+
 import { Chat, Client, Post } from "photop-client";
 
 import Words from "./words.json";

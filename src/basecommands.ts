@@ -175,8 +175,9 @@ export function Commands(post: Post, client: Client) {
 		if (args) {
 			const cmd = args[1].toLowerCase();
 			const body = args[2].substring(1);
-	
-			const commandObj = commands[cmd];
+
+			// commands["constructor"] works and will end up crashing sockbot since there is nothing to run.
+			const commandObj = commands.hasOwnProperty(cmd) && commands[cmd];
 			if (commandObj) {
 				const perm = commandObj.perms || 0;
 				if (perm === 1) {
