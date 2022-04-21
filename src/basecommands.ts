@@ -12,7 +12,6 @@ const help = {
 	unfollow: "sb!unfollow {username} Unfollows a user by their username",
 	help: "Shows a list of commands or info on a specific command",
 	about: "sb!about {topic} Gives opinion on certain things.",
-	hook: "sb!hook {id} Listens to a post the same way adding +SockBot to your post would.",
 	joingroup: "sb!joingroup {inviteid} Invites the bot to a group.",
 	postglobal: "sb!postglobal {message} Posts to global regardless of whether command was ran inside a group.",
 };
@@ -26,6 +25,11 @@ const commands: Record<
 	string,
 	{ func: (params: {chat: Chat, body: string, context: Context}) => void; perms?: number }
 > = {
+	shrug: {
+		func: ({chat})=>{
+			chat.post.chat("¯\\_(ツ)_/¯");
+		}
+	},
 	joingroup: {
 		func: async ({chat, body, context: {client}}) => {
 			try {
@@ -191,7 +195,7 @@ export function Commands(post: Post, client: Client) {
 				}
 				commandObj.func({chat, body, context: {client}});
 			} else {
-				chat.reply(`Commant not found ${cmd}`);
+				chat.reply(`Command not found ${cmd}`);
 			}
 		}
 	}
