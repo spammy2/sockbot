@@ -14,6 +14,7 @@ const help = {
 	about: "sb!about {topic} Gives opinion on certain things.",
 	joingroup: "sb!joingroup {inviteid} Invites the bot to a group.",
 	postglobal: "sb!postglobal {message} Posts to global regardless of whether command was ran inside a group.",
+	// stfu: "sb!stfu Tells everyone to shut the fuck up.",
 };
 
 
@@ -25,6 +26,10 @@ const commands: Record<
 	string,
 	{ func: (params: {chat: Chat, body: string, context: Context}) => void; perms?: number }
 > = {
+	// stfu: {
+	// 	func: async ({chat})=>{
+	// 	}
+	// },
 	shrug: {
 		func: ({chat})=>{
 			chat.post.chat("¯\\_(ツ)_/¯");
