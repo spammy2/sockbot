@@ -180,7 +180,7 @@ const commands: Record<
 export function Commands(post: Post, client: Client) {
 	// if (post.text.match("+SockBot")) ...
 	return (chat: Chat)=>{
-		const args = chat.text.match(/sb\!([A-Za-z]+)(.*)/);
+		const args = chat.text.match(/^[\t ]sb\!([A-Za-z]+)(.*)/);
 		if (args) {
 			const cmd = args[1].toLowerCase();
 			const body = args[2].substring(1);
