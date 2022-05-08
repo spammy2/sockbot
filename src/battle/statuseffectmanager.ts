@@ -9,6 +9,7 @@ export class StatusEffectManager {
 		const a = new statusConstructor(this);
 		if (a.canAdd) {
 			this.statusEffects.push(a);
+			a.onAdded();
 			return true;
 		}
 	}
@@ -30,7 +31,13 @@ export class StatusEffectManager {
 	}
 
 	remove(effect: StatusEffect){
-		this.statusEffects = this.statusEffects.filter(e => e !== effect);
+		this.statusEffects = this.statusEffects.filter(e => {
+			if (e === effect) {
+				effect.onRemoved();
+				return false;
+			}
+			return true;
+		});
 	}
 
 	tick(){
