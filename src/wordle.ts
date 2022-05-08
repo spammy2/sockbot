@@ -62,7 +62,8 @@ export function Wordle(post: Post, client: Client) {
 						for (let i = 0; i < 5; i++) {
 							let letter = guess[i];
 							let index = word_arr.indexOf(letter);
-							if (index === -1) {
+							let used: Record<string, boolean> = {};
+							if (index === -1 && !used[letter]) {
 								result.push("_");
 								if (unknown_letters.indexOf(letter) != -1) {
 									unknown_letters.splice(
@@ -70,12 +71,13 @@ export function Wordle(post: Post, client: Client) {
 									1)
 									grey_letters.push(letter);
 								}
-							} else if (index === i) {
+							} else if (index === i && !used[letter]) {
 								result.push(solid_letters[letter]);
-								word_arr[i] = undefined;
+								used[letter] = true;
+								
 							} else {
 								result.push(outlined_letters[letter])
-								word_arr[i] = undefined;
+								used[letter] = true;
 							}
 						}
 						chat.reply(
