@@ -1,10 +1,6 @@
 import { Chat, Client, Post, User } from "photop-client";
 import { Battle } from "./core/battle";
-import { Demon } from "./enemies/demon";
 import { Enemy } from "./enemies/enemy";
-import { Golem } from "./enemies/golem";
-import { IceSlime, FireSlime } from "./enemies/slimes";
-import { Zombie, EliteZombie } from "./enemies/zombie";
 import { Entity } from "./core/entity";
 import { Enchanter } from "./playertypes/enchanter";
 import { Fighter } from "./playertypes/fighter";
