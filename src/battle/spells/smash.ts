@@ -8,6 +8,9 @@ export class Smash extends Spell {
 	manaCost = 0;
 	type = SpellTypes.Normal;
 	canUse(target: Entity): string | void {
+		const response = super.canUse(target);
+		if (response) return response;
+		
 		if (target.team === this.user.team) {
 			return "Can't attack your own team";
 		}
