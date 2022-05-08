@@ -8,6 +8,7 @@ export class Slash extends Spell {
 	manaCost = 0;
 	type = SpellTypes.Normal;
 	canUse(target: Entity): string | void {
+		super.canUse();
 		if (target.team === this.user.team) {
 			return "Can't attack your own team";
 		}

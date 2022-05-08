@@ -81,7 +81,7 @@ export async function BattleGame(post: Post, client: Client) {
 			}
 		}
 
-		post.chat("Playing BattleGame with " + users.map((u) => u.username).join(", ") + ". All members must do battle!selectclass then the owner will do battle!start");
+		post.chat("Playing BattleGame with " + users.map((u) => u.username).join(", ") + ". All members must do battle!chooseclass then the owner will do battle!start");
 
 		const chosenClasses: Map<User, typeof Entity> = new Map();
 
