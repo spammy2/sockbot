@@ -1,4 +1,4 @@
-import { Spell } from "../spells";
+import { Spell } from "../core/spells";
 import { Curse } from "../spells/curse";
 import { Heal } from "../spells/heal";
 import { Poison } from "../spells/poison";

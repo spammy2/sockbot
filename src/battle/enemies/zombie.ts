@@ -1,9 +1,9 @@
-import { Team } from "..";
-import { Spell } from "../spells";
+import { Spell } from "../core/spells";
 import { Charge } from "../spells/charge";
 import { Rest } from "../spells/rest";
 import { Slash } from "../spells/slash";
 import { Undead } from "../statuses/undead";
+import { Team } from "../core/team";
 import { Enemy } from "./enemy";
 
 export class Zombie extends Enemy {

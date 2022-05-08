@@ -1,9 +1,9 @@
-import { Team } from "..";
 import { Enemy } from "./enemy";
-import { Spell } from "../spells";
+import { Spell } from "../core/spells";
 import { Charge } from "../spells/charge";
 import { FireBased } from "../statuses/fire-based";
 import { IceBased } from "../statuses/ice-based";
+import { Team } from "../core/team";
 
 abstract class Slime extends Enemy {
 	maxHealth = 75;

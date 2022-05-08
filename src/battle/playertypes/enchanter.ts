@@ -1,15 +1,11 @@
-import { Entity } from "../entity";
-import { Spell } from "../spells";
-import { Charge } from "../spells/charge";
+import { Spell } from "../core/spells";
 import { Curse } from "../spells/curse";
-import { Fireball } from "../spells/fireball";
-import { Heal } from "../spells/heal";
 import { Poison } from "../spells/poison";
 import { Rest } from "../spells/rest";
 import { SolarBeam } from "../spells/solar-beam";
-import { WaterJet } from "../spells/water-jet";
+import { Player } from "./player";
 
-export class Enchanter extends Entity {
+export class Enchanter extends Player {
 	description = "A enchanter who does status effects.";
 	spells: Record<string, Spell> = {
 		poison: new Poison(this),

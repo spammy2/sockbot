@@ -1,4 +1,4 @@
-import { Spell, SpellTypes } from "../spells";
+import { Spell, SpellTypes } from "../core/spells";
 
 export class Rest extends Spell {
 	name = "Rest";

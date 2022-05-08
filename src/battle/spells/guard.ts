@@ -1,4 +1,4 @@
-import { Spell, SpellTypes } from "../spells";
+import { Spell, SpellTypes } from "../core/spells";
 import { Guarding } from "../statuses/guarding";
 
 export class Guard extends Spell {

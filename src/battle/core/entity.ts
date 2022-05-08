@@ -1,7 +1,8 @@
-import { Team } from ".";
 import { Spell } from "./spells";
 import { StatusEffect } from "./statuseffect";
 import { StatusEffectManager } from "./statuseffectmanager";
+import { Team } from "./team";
+import { Origin } from "./types";
 
 export class Entity {
 	name = "Unnamed Entity";
@@ -13,10 +14,14 @@ export class Entity {
 	statusEffectManager = new StatusEffectManager(this);
 	spells: Record<string, Spell> = {}
 	isDead = false;
+	
+	canMakeMove = false;
 
-	//called when died
-	onDeath = (origin?: StatusEffect | Spell)=>{};
-	takeDamage(amount: number, origin?: StatusEffect | Spell) {
+	onDeath(origin: Origin){
+		this.team.battle.onDeath(this, origin);
+	}
+	
+	takeDamage(amount: number, origin?: Origin) {
 		const actualAmount = Math.round(this.statusEffectManager.processIncomingDamage(amount, origin));
 		
 		this.health -= actualAmount;
@@ -34,17 +39,17 @@ export class Entity {
 		}
 		return this.spells[keys[Math.floor(Math.random() * keys.length)]];
 	}
-	recoverMana(amount: number, origin?: StatusEffect | Spell) {
+	recoverMana(amount: number, origin: Origin) {
 		const prevMana = this.mana;
 		this.mana = Math.min(this.mana + amount, this.maxMana);
 		return this.mana - prevMana;
 	}
-	recoverHealth(amount: number, origin?: StatusEffect | Spell) {
+	recoverHealth(amount: number, origin: Origin) {
 		const prevHealth = this.health;
 		this.health = Math.min(this.health + amount, this.maxHealth);
 		return this.health - prevHealth;
 	}
-	performAttack(amount: number, target: Entity, origin?: StatusEffect | Spell): number {
+	performAttack(amount: number, target: Entity, origin: Origin): number {
 		const actualAmount = Math.round(target.takeDamage(this.statusEffectManager.processAttack(amount, origin), origin));
 		return actualAmount;
 	}

@@ -1,5 +1,4 @@
 import { Entity } from "./entity";
-import { randomNumber } from "./util";
 
 export enum SpellTypes {
 	Curse,

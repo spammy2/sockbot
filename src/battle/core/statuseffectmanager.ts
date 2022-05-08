@@ -1,6 +1,7 @@
 import { Entity } from "./entity";
 import { Spell } from "./spells";
 import { StatusEffect } from "./statuseffect";
+import { Origin } from "./types";
 
 export class StatusEffectManager {
 	statusEffects: StatusEffect[] = [];
@@ -18,13 +19,13 @@ export class StatusEffectManager {
 		return this.statusEffects.filter(e => !e.hidden);
 	}
 
-	processIncomingDamage(amount: number, origin?: StatusEffect | Spell): number {
+	processIncomingDamage(amount: number, origin: Origin): number {
 		return this.statusEffects.reduce((current,v)=>{
 			return v.processIncomingDamage(current, origin)
 		},amount)
 	}
 
-	processAttack(amount: number, origin?: StatusEffect | Spell): number {
+	processAttack(amount: number, origin: Origin): number {
 		return this.statusEffects.reduce((current,v)=>{
 			return v.processAttack(current, origin);
 		},amount)

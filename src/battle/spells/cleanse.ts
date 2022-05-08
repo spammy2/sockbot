@@ -1,6 +1,6 @@
-import { Entity } from "../entity";
-import { Spell, SpellTypes } from "../spells";
-import { StatusEffect } from "../statuseffect";
+import { Entity } from "../core/entity";
+import { Spell, SpellTypes } from "../core/spells";
+import { StatusEffect } from "../core/statuseffect";
 
 export class Cleanse extends Spell {
 	name = "Cleanse";

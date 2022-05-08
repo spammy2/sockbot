@@ -1,4 +1,4 @@
-import { StatusEffect } from "../statuseffect";
+import { StatusEffect } from "../core/statuseffect";
 
 export class Poisoned extends StatusEffect {
 	name = "Poisoned"

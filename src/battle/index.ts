@@ -1,52 +1,56 @@
 import { Chat, Client, Post, User } from "photop-client";
+import { Battle } from "./core/battle";
 import { Demon } from "./enemies/demon";
 import { Enemy } from "./enemies/enemy";
 import { Golem } from "./enemies/golem";
 import { IceSlime, FireSlime } from "./enemies/slimes";
 import { Zombie, EliteZombie } from "./enemies/zombie";
-import { Entity } from "./entity";
+import { Entity } from "./core/entity";
 import { Enchanter } from "./playertypes/enchanter";
 import { Fighter } from "./playertypes/fighter";
 import { Healer } from "./playertypes/healer";
 import { Mage } from "./playertypes/mage";
-import { Spell } from "./spells";
+import { Player } from "./playertypes/player";
+import { Team } from "./core/team";
 
-export class Team {
-	entities: Entity[] = [];
-	currentEntity: Entity = this.entities[0];
-
-	remove(entity: Entity) {
-		if (this.currentEntity === entity) {
-			this.nextEntity();
-		}
-		this.entities = this.entities.filter((e) => e !== entity);
-	}
-
-	getRandom(){
-		return this.entities[Math.floor(Math.random() * this.entities.length)];
-	}
-
-	// returns true if all members have gone
-	nextEntity() {
-		let index = this.entities.indexOf(this.currentEntity) + 1;
-
-		if (index >= this.entities.length) {
-			this.currentEntity = this.entities[0];
-			return true;
-		} else {
-			this.currentEntity = this.entities[index];
+class EnemyTeam extends Team {
+	turnStarted() {
+		while (true) {
+			const isLast = this.nextEntity();
+			const current = this.currentEntity as Enemy;
+			const result = current.move();
+			this.battle.announce(result.message);
+			current.tick();
+			if (isLast) {
+				break;
+			}
 		}
 	}
-	constructor(public battle: Battle) {}
+	constructor(public battle: Battle) {
+		super(battle);
+	}
 }
 
-export class Battle {
+class NPCBattle extends Battle {
 	playerTeam = new Team(this);
-	enemyTeam = new Team(this);
-	constructor() {}
+	enemyTeam = new EnemyTeam(this);
+
+	announce(message: string) {
+		this.post.chat(message);
+	}
+
+	isPlayerTurn(player: Player) {
+		if (this.currentTeam?.currentEntity === player) {
+			return true;
+		}
+		return false;
+	}
+	constructor(public post: Post) {
+		super();
+	}
 }
 
-const classes = [Enchanter, Fighter, Healer, Mage]
+const classes = [Enchanter, Fighter, Healer, Mage];
 
 export async function BattleGame(post: Post, client: Client) {
 	const a = post.text.match(/\+BattleGame/);
@@ -56,60 +60,34 @@ export async function BattleGame(post: Post, client: Client) {
 		);
 		const users = Array.from(new Set([post.author, ...invited.filter((u) => u != null)])) as User[];
 
-		const battle = new Battle();
+		const battle: Battle = new NPCBattle(post);
 		const playerMap = new Map<User, Entity>();
 
-		let isPlayerTurn = true;
-		let gameStarted = false;
 
-		function addEnemy(t: new (t: Team) => Entity) {
-			const enemy = new t(battle.enemyTeam);
-			enemy.onDeath = (origin) => {
-				if (origin instanceof Spell) {
-					post.chat(`${enemy.name} has died. Killed by ${origin.user.name}`);
-				} else {
-					post.chat(`${enemy.name} has died.`);
-				}
-			};
-			battle.enemyTeam.entities.push(enemy);
-		}
-
-		function doTurn() {
-			if (battle.playerTeam.nextEntity()) {
-				isPlayerTurn = false;
-				doEnemyTeam();
-			}
-		}
-
-		post.chat("Playing BattleGame with " + users.map((u) => u.username).join(", ") + ". All members must do battle!chooseclass then the owner will do battle!start");
+		post.chat(
+			"Playing BattleGame with " +
+				users.map((u) => u.username).join(", ") +
+				". All members must do battle!chooseclass then the owner will do battle!start"
+		);
 
 		const chosenClasses: Map<User, typeof Entity> = new Map();
 
-		async function doEnemyTeam() {
-			while (true) {
-				const current = battle.enemyTeam.currentEntity as Enemy;
-				const result = current.move();
-				post.chat(result.message);
-				current.tick();
-				if (battle.enemyTeam.nextEntity()) {
-					break;
-				}
-			}
-			isPlayerTurn = true;
-		}
-
 		function getTarget(v: string) {
 			let target: Entity | undefined;
-			if (!isNaN(parseInt(v))) {
-				target = battle.enemyTeam.entities[parseInt(v)];
-			} else {
-				const u = users.find((u) => u.username === v);
-				if (u) {
-					target = playerMap.get(u)!;
+			if (battle instanceof NPCBattle) {
+				const num = parseInt(v);
+				if (!isNaN(num)) {
+					target = battle.enemyTeam.entities[num];
 				}
+			}
+			const u = users.find((u) => u.username === v);
+			if (u) {
+				target = playerMap.get(u)!;
 			}
 			return target;
 		}
+
+		const context = {chosenClasses, started: false}
 
 		return (chat: Chat) => {
 			let text: RegExpMatchArray | null;
@@ -117,8 +95,10 @@ export async function BattleGame(post: Post, client: Client) {
 				let val = text[1];
 				const args = val.split(" ");
 				const command = args.shift();
-				if (users.includes(chat.author)) {
-					if (gameStarted) {
+				const p = playerMap.get(chat.author);
+
+				if (p) {
+					if (context.started) {
 						if (command === "party") {
 							chat.reply(`Party Members: ${users.map((u) => u.username).join(", ")}`);
 						} else if (command === "stats") {
@@ -138,12 +118,12 @@ export async function BattleGame(post: Post, client: Client) {
 							// skip a user if they are not cooperating and making a move
 						} else if (command === "skipcurrent") {
 							if (chat.author === post.author) {
-								if (isPlayerTurn) {
-									const current = battle.playerTeam.currentEntity;
-									chat.reply(`Forced ${current.name} to skip their turn.`);
-									doTurn();
+								if (battle.currentTeam instanceof EnemyTeam) {
+									chat.reply("It is the enemy's turn right now");
 								} else {
-									chat.reply("It's the enemy's turn right now");
+									const current = battle.currentTeam.currentEntity;
+									chat.reply(`Forced ${current.name} to skip their turn.`);
+									battle.currentTeam.nextEntity();
 								}
 							} else {
 								chat.reply("You can't skip someone else's turn unless you are the owner");
@@ -156,7 +136,6 @@ export async function BattleGame(post: Post, client: Client) {
 								chat.reply("Invalid target");
 							}
 						} else if (command === "spellinfo") {
-							const p = playerMap.get(chat.author)!;
 							const spell = p.spells[args[0]];
 							if (spell) {
 								chat.reply(`${spell.name}: ${spell.description}`);
@@ -164,17 +143,16 @@ export async function BattleGame(post: Post, client: Client) {
 								chat.reply("Invalid spell");
 							}
 						} else if (command === "turn") {
-							if (isPlayerTurn) {
-								chat.reply(`It is ${battle.playerTeam.currentEntity.name}'s turn`);
-							} else {
+							if (battle.currentTeam instanceof EnemyTeam) {
 								chat.reply("It is the enemy's turn");
+							} else {
+								chat.reply(`It is ${battle.currentTeam.currentEntity.name}'s turn`);
 							}
 						} else if (command === "use") {
-							const p = playerMap.get(chat.author)!;
 							const spellName = args[0];
 
 							if (spellName) {
-								if (isPlayerTurn && battle.playerTeam.currentEntity === p) {
+								if (battle.currentTeam.currentEntity === p) {
 									const spell = p.spells[spellName];
 									let target: Entity | undefined;
 									if (args[1]) {
@@ -192,7 +170,7 @@ export async function BattleGame(post: Post, client: Client) {
 											if (response) {
 												chat.reply(response);
 											}
-											doTurn();
+											battle.currentTeam.nextEntity();
 										}
 									} else {
 										chat.reply("You don't have that move.");
@@ -204,11 +182,14 @@ export async function BattleGame(post: Post, client: Client) {
 								chat.reply(`Moves: ${Object.keys(p.spells).join(", ")}`);
 							}
 						} else if (command === "enemies") {
-							chat.reply(
-								`Enemies: ${battle.enemyTeam.entities.map((e, i) => `${i}: ${e.name}`).join(", ")}`
-							);
+							if (p.team.enemyTeam instanceof EnemyTeam) {
+								chat.reply(
+									`Enemies: ${p.team.enemyTeam.entities.map((e, i) => `${i}: ${e.name}`).join(", ")}`
+								);
+							} else {
+								chat.reply(`Enemies: ${p.team.enemyTeam.entities.map((e) => e.name).join(", ")}`);
+							}
 						} else if (command === "debug.takedamage") {
-							const p = playerMap.get(chat.author)!;
 							p.takeDamage(Number(args[0]));
 							chat.reply(`You now have ${p.health} health.`);
 						} else if (command === "help") {
@@ -219,39 +200,31 @@ export async function BattleGame(post: Post, client: Client) {
 							if (post.author === chat.author) {
 								for (const user of users) {
 									const chosenClass = chosenClasses.get(user);
-									if (!chosenClass) {return chat.reply(`${user.username} has not chosen a class yet.`);}
-									const c = new chosenClass(battle.playerTeam);
+									if (!chosenClass) {
+										return chat.reply(`${user.username} has not chosen a class yet.`);
+									}
+									const c = new chosenClass(battle.teams[0]);
 									c.name = user.username;
 									playerMap.set(user, c);
-									battle.playerTeam.entities.push(c);
+									battle.teams[0].entities.push(c);
 								}
-								const generatable = [Zombie, IceSlime, EliteZombie, FireSlime, Golem, Demon];
-								for (let i = 0; i < 5; i++) {
-									addEnemy(generatable[Math.floor(Math.random() * generatable.length)]);
-								}
-								addEnemy(EliteZombie);
-								addEnemy(Golem);
-								addEnemy(Demon);
-						
-								battle.enemyTeam.currentEntity = battle.enemyTeam.entities[0];
-								battle.playerTeam.currentEntity = battle.playerTeam.entities[0];
-								gameStarted = true;
+
+								context.started = true;
 								chat.reply("Game has started!");
 							} else {
 								chat.reply("You can't start the game unless you are the owner");
 							}
 						} else if (command === "chooseclass") {
-							const p = playerMap.get(chat.author)!;
 							const className = args[0];
 							let classChosen = true;
 							if (className) {
-								if (className==="fighter") {
+								if (className === "fighter") {
 									chosenClasses.set(chat.author, Fighter);
-								} else if (className==="mage") {
+								} else if (className === "mage") {
 									chosenClasses.set(chat.author, Mage);
-								} else if (className==="enchanter") {
+								} else if (className === "enchanter") {
 									chosenClasses.set(chat.author, Enchanter);
-								} else if (className==="healer") {
+								} else if (className === "healer") {
 									chosenClasses.set(chat.author, Healer);
 								} else {
 									classChosen = false;
@@ -260,9 +233,8 @@ export async function BattleGame(post: Post, client: Client) {
 								if (classChosen) {
 									chat.reply(`You are now a ${className}`);
 								}
-
 							} else {
-								chat.reply("Available classes: " + (classes).map(e=>e.name.toLowerCase()).join(", "));
+								chat.reply("Available classes: " + classes.map((e) => e.name.toLowerCase()).join(", "));
 							}
 						}
 					}

@@ -1,4 +1,4 @@
-import { Entity } from "../entity";
+import { Entity } from "../core/entity";
 
 export abstract class Enemy extends Entity {
 	name = "Unnamed Enemy";
@@ -8,7 +8,7 @@ export abstract class Enemy extends Entity {
 		if (spell) {
 			let target: Entity;
 			if (spell.targetType === "enemy") {
-				target = this.team.battle.playerTeam.getRandom();
+				target = this.team.enemyTeam.getRandom();
 			} else {
 				target = this.team.getRandom();
 			}

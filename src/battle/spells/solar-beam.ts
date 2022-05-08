@@ -1,5 +1,5 @@
-import { Entity } from "../entity";
-import { Spell, SpellTypes } from "../spells";
+import { Entity } from "../core/entity";
+import { Spell, SpellTypes } from "../core/spells";
 import { randomNumber } from "../util";
 
  export class SolarBeam extends Spell {

@@ -1,4 +1,4 @@
-import { Spell } from "../spells";
+import { Spell } from "../core/spells";
 import { Smash } from "../spells/smash";
 import { Enemy } from "./enemy";
 

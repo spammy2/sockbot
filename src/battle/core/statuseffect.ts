@@ -1,5 +1,6 @@
 import { Spell } from "./spells";
 import { StatusEffectManager } from "./statuseffectmanager";
+import { Origin } from "./types";
 
 export abstract class StatusEffect {
 	name = "Unnamed Status Effect"
@@ -11,20 +12,22 @@ export abstract class StatusEffect {
 	canAdd = true;
 
 	/** Processes damage received */
-	processIncomingDamage(amount: number, origin?: StatusEffect | Spell): number {return amount};
+	processIncomingDamage(amount: number, origin: Origin): number {return amount};
 
 	/** Processes outbound attacks */
-	processAttack(amount: number, origin?: StatusEffect | Spell): number {return amount};
+	processAttack(amount: number, origin: Origin): number {return amount};
 
 	remove(){
 		this.manager.remove(this);
 		this.onRemoved();
 	}
 
+	/** Called when this status effect is added */
 	onAdded() {
 
 	};
 
+	/** Called when this status effect is removed */
 	onRemoved(){
 
 	}
