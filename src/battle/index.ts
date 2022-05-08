@@ -10,16 +10,6 @@ import { Fighter } from "./playertypes/fighter";
 import { Healer } from "./playertypes/healer";
 import { Mage } from "./playertypes/mage";
 import { Spell } from "./spells";
-import { Charge } from "./spells/charge";
-import { Cleanse } from "./spells/cleanse";
-import { Curse } from "./spells/curse";
-import { Fireball } from "./spells/fireball";
-import { Heal } from "./spells/heal";
-import { ManaBomb } from "./spells/mana-bomb";
-import { Rest } from "./spells/rest";
-import { Smash } from "./spells/smash";
-import { SolarBeam } from "./spells/solar-beam";
-import { WaterJet } from "./spells/water-jet";
 
 export class Team {
 	entities: Entity[] = [];
