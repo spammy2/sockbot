@@ -2,6 +2,7 @@
   "repository": "https://github.com/spammy2/sockbot",
   "main": "out/index.js",
   "scripts": {
+    "test": "tsc && npm run start",
     "start": "node .",
     "postinstall": "tsc"
   },

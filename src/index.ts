@@ -2,6 +2,7 @@ import { Chat, Client, Post } from "photop-client";
 import { config } from "dotenv";
 import { Wordle } from "./wordle";
 import { Commands } from "./basecommands";
+import { NumberGuess } from "./numberguess";
 
 const noop = ()=>{};
 config();
@@ -12,7 +13,7 @@ const client = new Client(
 );
 
 async function onPost(post: Post){	
-	let onChats = [Wordle, Commands].map(f=>f(post, client)).filter((c): c is (chat: Chat)=>void=>c!==undefined);
+	let onChats = [Wordle, Commands, NumberGuess].map(f=>f(post, client)).filter((c): c is (chat: Chat)=>void=>c!==undefined);
 	let update = await post.connect(10 * 60 * 1000, ()=>{
 		post.onChat = noop; // (should) allow garbage collector to clean up post to free up memory;
 	});

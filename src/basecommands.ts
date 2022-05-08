@@ -191,9 +191,9 @@ export function Commands(post: Post, client: Client) {
 				const perm = commandObj.perms || 0;
 				if (perm === 1) {
 					if (!(
-						chat.user.roles.indexOf("Owner") > 0 ||
-						chat.user.roles.indexOf("Developer") > 0 ||
-						chat.user.id === "61b4520e4ea86c6fe9800c3b"
+						chat.author.roles.indexOf("Owner") > 0 ||
+						chat.author.roles.indexOf("Developer") > 0 ||
+						chat.author.id === "61b4520e4ea86c6fe9800c3b"
 					)) {
 						chat.reply("Permission required");
 					}

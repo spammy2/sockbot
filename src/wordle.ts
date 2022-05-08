@@ -14,10 +14,8 @@ const guesses_map = Object.fromEntries(
 
 export function Wordle(post: Post, client: Client) {
 	const match = post.text.match(/\+Wordle((?: \@.+?\<[0-f]+\>)*)/);
-	console.log(match);
 	if (match) {
 		let users = match[1];
-		console.log(users)
 
 		let invited = new Set((users.match(/<([0-f]+)>/g) || []).map(e=>e.match(/<([0-f]+)>/)![1])); //get and remove duplicate ids. if the user mentions themselves, nothing happens. too lazy to remove author.
 		let attemptsLeft = 6;
