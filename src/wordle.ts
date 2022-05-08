@@ -12,16 +12,23 @@ const guesses_map = Object.fromEntries(
 	[...answers, ...guesses].map((e) => [e, true])
 );
 
+let e = ["abcdefghijklmnopqrstuvwxyz", "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉", "🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇🆈🆉"]
+let outlined_letters = Object.fromEntries(e[0].split("").map((val,i)=>[val, e[1][i*2]+e[1][i*2+1]]))
+let solid_letters = Object.fromEntries(e[0].split("").map((val,i)=>[val, e[2][i*2]+e[2][i*2+1]]))
+
+
 export function Wordle(post: Post, client: Client) {
 	const match = post.text.match(/\+Wordle((?: \@.+?\<[0-f]+\>)*)/);
 	if (match) {
 		let users = match[1];
-
+		
 		let invited = new Set((users.match(/<([0-f]+)>/g) || []).map(e=>e.match(/<([0-f]+)>/)![1])); //get and remove duplicate ids. if the user mentions themselves, nothing happens. too lazy to remove author.
 		let attemptsLeft = 6;
 		post.chat(
 			`Playing Wordle with ${post.author.username} and ${invited.size} other user(s). Other users may suggest but not play. Chat wordle.rules for info.`
-		);
+			);
+		let unknown_letters = "abcdefghijklmnopqrstuvwxyz".split("");
+		let grey_letters = [];
 		let word = answers[Math.floor(Math.random() * answers.length)];
 		return (chat: Chat) => {
 			if (chat.user === post.author || invited.has(chat.user.id)) {
@@ -29,7 +36,7 @@ export function Wordle(post: Post, client: Client) {
 					// validate that it is a 5 letter word.
 					const guess = chat.text.toLowerCase();
 					if (guess === word) {
-						post.chat("YOU WIN. (You can play again.)");
+						chat.reply("YOU WIN. (You can play again.)");
 						word =
 							answers[Math.floor(Math.random() * answers.length)];
 						attemptsLeft = 6;
@@ -37,7 +44,7 @@ export function Wordle(post: Post, client: Client) {
 						// validate that it IS a word
 						attemptsLeft--;
 						if (attemptsLeft === 0) {
-							post.chat(
+							chat.reply(
 								`You lose. Correct word: ${word}. You can play again.`
 							);
 							word =
@@ -57,31 +64,43 @@ export function Wordle(post: Post, client: Client) {
 							let index = word_arr.indexOf(letter);
 							if (index === -1) {
 								result.push("_");
+								if (unknown_letters.indexOf(letter) != -1) {
+									unknown_letters.splice(
+										unknown_letters.indexOf(letter),
+									1)
+									grey_letters.push(letter);
+								}
 							} else if (index === i) {
-								result.push(letter.toUpperCase());
+								result.push(solid_letters[letter]);
 								word_arr[i] = undefined;
 							} else {
-								result.push(letter.toLowerCase());
+								result.push(outlined_letters[letter])
 								word_arr[i] = undefined;
 							}
 						}
-						post.chat(
+						chat.reply(
 							result.join("") +
 								" Attempts Left: " +
 								attemptsLeft +
 								""
 						);
 					} else {
-						post.chat("That's not a word, silly");
+						chat.reply("That's not a word, silly");
 					}
 				} else if (chat.text === "wordle.answer") {
-					post.chat(
+					chat.reply(
 						`Answer: '${word}' (This is a cheat command that gives you the answer. You don't lose the game but running it ruins the fun.)`
 					);
+				} else if (chat.text === "wordle.addattempt") {
+					attemptsLeft++;
+					chat.reply(
+						`You have ${attemptsLeft} attempt(s) left.`)
+				} else if (chat.text === "wordle.letters") {
+					
 				}
 			}
 			if (chat.text === "wordle.rules") {
-				post.chat(
+				chat.reply(
 					"You have 6 attempts to guess a 5 letter answer. For each guess, there will be a response: upper case indicates it is the correct position. Lower case indicates the letter is somewhere in the word."
 				);
 			}
