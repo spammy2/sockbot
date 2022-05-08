@@ -7,7 +7,7 @@ export class Rest extends Spell {
 	type = SpellTypes.Heal;
 	canUse(){
 		if (this.user.health === this.user.maxHealth && this.user.mana === this.user.maxMana) {
-			return "You are already at full health and mana!";
+			return "Already at full health and mana!";
 		}
 	}
 	action() {

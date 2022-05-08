@@ -22,7 +22,7 @@ export class IceSlime extends Slime {
 	}
 }
 
-export class FireSlime extends Enemy {
+export class FireSlime extends Slime {
 	name = "Fire Slime";
 	description = "A slime made out of fire.";
 	constructor(team: Team) {

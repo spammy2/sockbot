@@ -19,7 +19,7 @@ export abstract class Spell {
 
 	// returns void if can use
 	canUse(target?: Entity): string | void {
-		if (this.user.mana <= this.manaCost) {
+		if (this.user.mana < this.manaCost) {
 			return "Not enough mana";
 		};
 		if (this.requiresTarget && !target) {

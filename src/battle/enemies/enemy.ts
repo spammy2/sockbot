@@ -26,7 +26,7 @@ export abstract class Enemy extends Entity {
 
 			const msg = spell.canUse(target);
 			if (msg) {
-				return { type: "failure", message: msg };
+				return { type: "failure", message: `${this.name} is unable to use ${spell.name}, ${msg}` };
 			} else {
 				const response = spell.action(target);
 				return { type: "success", message: `${this.name} used ${spell.name}. ${response}` };

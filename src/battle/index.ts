@@ -233,6 +233,7 @@ export async function BattleGame(post: Post, client: Client) {
 									const c = new chosenClass(battle.playerTeam);
 									c.name = user.username;
 									playerMap.set(user, c);
+									battle.playerTeam.entities.push(c);
 								}
 								const generatable = [Zombie, IceSlime, EliteZombie, FireSlime, Golem, Demon];
 								for (let i = 0; i < 5; i++) {
@@ -266,7 +267,7 @@ export async function BattleGame(post: Post, client: Client) {
 									classChosen = false;
 									chat.reply("Invalid class");
 								}
-								if (!classChosen) {
+								if (classChosen) {
 									chat.reply(`You are now a ${className}`);
 								}
 
