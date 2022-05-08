@@ -3,12 +3,12 @@
   "main": "out/index.js",
   "scripts": {
     "test": "tsc && npm run start",
-    "start": "node .",
+    "start": "node --inspect .",
     "postinstall": "tsc"
   },
   "dependencies": {
     "dotenv": "^14.1.0",
-    "photop-client": "^3.2.3"
+    "photop-client": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^17.0.8",

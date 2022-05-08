@@ -4,24 +4,29 @@ import { Wordle } from "./wordle";
 import { Commands } from "./basecommands";
 import { NumberGuess } from "./numberguess";
 import { Ouija } from "./ouija";
+import { BattleGame } from "./battle";
 
 const noop = ()=>{};
 config();
 
 const client = new Client(
 	{ username: process.env.USERNAME!, password: process.env.PASSWORD! },
-	{ logSocketMessages: true }
+	{ logSocketMessages: false }
 );
 
 async function onPost(post: Post){	
-	let onChats = [Wordle, Commands, NumberGuess, Ouija].map(f=>f(post, client)).filter((c): c is (chat: Chat)=>void=>c!==undefined);
+	let onChats = [Wordle, Commands, NumberGuess, Ouija, BattleGame].map(f=>f(post, client)).filter((c): c is (chat: Chat)=>void | Promise<(chat: Chat)=>void> =>c!==undefined);
 	let update = await post.connect(10 * 60 * 1000, ()=>{
 		post.onChat = noop; // (should) allow garbage collector to clean up post to free up memory;
 	});
-	post.onChat = (chat)=>{
+	
+	post.onChat = async (chat)=>{
 		update();
-		onChats.forEach(c=>{
-			c(chat)
+		const l = await Promise.all(onChats);
+		l.forEach(c=>{
+			if (typeof c === "function") {
+				c(chat)
+			}
 		})
 	}
 }

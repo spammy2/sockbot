@@ -20,6 +20,7 @@ let solid_letters = Object.fromEntries(e[0].split("").map((val,i)=>[val, e[2][i*
 export function Wordle(post: Post, client: Client) {
 	const match = post.text.match(/\+Wordle((?: \@.+?\<[0-f]+\>)*)/);
 	if (match) {
+
 		let users = match[1];
 		
 		let invited = new Set((users.match(/<([0-f]+)>/g) || []).map(e=>e.match(/<([0-f]+)>/)![1])); //get and remove duplicate ids. if the user mentions themselves, nothing happens. too lazy to remove author.
@@ -74,14 +75,14 @@ export function Wordle(post: Post, client: Client) {
 							} else if (index === i && !used[letter]) {
 								result.push(solid_letters[letter]);
 								used[letter] = true;
-								
+
 							} else {
 								result.push(outlined_letters[letter])
 								used[letter] = true;
 							}
 						}
 						chat.reply(
-							result.join("") +
+							result.join(" ") +
 								" Attempts Left: " +
 								attemptsLeft +
 								""
