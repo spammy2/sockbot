@@ -8,6 +8,13 @@ import { Healer } from "./playertypes/healer";
 import { Mage } from "./playertypes/mage";
 import { Player } from "./playertypes/player";
 import { Team } from "./core/team";
+import { Origin } from "./core/types";
+import { Spell } from "./core/spells";
+import { StatusEffect } from "./core/statuseffect";
+import { EliteZombie, Zombie } from "./enemies/zombie";
+import { Golem } from "./enemies/golem";
+import { Demon } from "./enemies/demon";
+import { FireSlime, IceSlime } from "./enemies/slimes";
 
 class NPCBattle extends Battle {
 	playerTeam: Team = new Team(this);
@@ -18,19 +25,64 @@ class NPCBattle extends Battle {
 		this.post.chat(message);
 	}
 
+	onDeath(entity: Entity, origin: Origin): void {
+		if (origin) {
+			if (origin instanceof Spell) {
+				this.post.chat(`${entity.name} died to ${origin.user.name}.`);
+			} else if (origin instanceof StatusEffect) {
+				this.post.chat(`${entity.name} died from ${origin.name}.`);
+			} else {
+				this.post.chat(`${entity.name} died for some reason`);
+			}
+		} else {
+			this.post.chat(`${entity.name} died to magic.`);
+		}
+	}
+
 	isPlayerTurn(player: Player) {
 		if (this.currentTeam?.currentEntity === player) {
 			return true;
 		}
 		return false;
 	}
-	constructor(public post: Post) {
+	constructor(public post: Post, difficulty: "easy" | "normal" | "hard") {
 		super();
+		if (difficulty === "easy") {
+			this.enemyTeam.entities.push(new Zombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new Zombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new FireSlime(this.enemyTeam));
+			this.enemyTeam.entities.push(new IceSlime(this.enemyTeam));
+		} else if (difficulty === "normal") {
+			this.enemyTeam.entities.push(new EliteZombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new Zombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new Golem(this.enemyTeam));
+			this.enemyTeam.entities.push(new FireSlime(this.enemyTeam));
+		} else if (difficulty === "hard") {
+			this.enemyTeam.entities.push(new Golem(this.enemyTeam));
+			this.enemyTeam.entities.push(new Golem(this.enemyTeam));
+			this.enemyTeam.entities.push(new Demon(this.enemyTeam));
+			this.enemyTeam.entities.push(new EliteZombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new EliteZombie(this.enemyTeam));
+			this.enemyTeam.entities.push(new Zombie(this.enemyTeam));
+		}
 	}
 }
 
 class PVPBattle extends Battle {
 	teams: Team[] = [new Team(this), new Team(this)];
+	onDeath(entity: Entity, origin: Origin): void {
+		if (origin) {
+			if (origin instanceof Spell) {
+				this.post.chat(`${entity.name} died to ${origin.user.name}.`);
+			} else if (origin instanceof StatusEffect) {
+				this.post.chat(`${entity.name} died from ${origin.name}.`);
+			} else {
+				this.post.chat(`${entity.name} died for some reason`);
+			}
+		} else {
+			this.post.chat(`${entity.name} died to magic.`);
+		}
+	}
 	announce(message: string) {
 		this.post.chat(message);
 	}
@@ -89,7 +141,6 @@ export async function BattleGame(post: Post, client: Client) {
 				const args = val.split(" ");
 				const command = args.shift();
 
-				console.log(users, chat.author);
 				if (users.includes(chat.author)) {
 					if (battle) {
 						const p = playerMap.get(chat.author);
@@ -192,6 +243,18 @@ export async function BattleGame(post: Post, client: Client) {
 						}
 					} else {
 						if (command === "start") {
+							let difficulty: "easy" | "normal" | "hard" = "normal";
+							if (args[0]) {
+								if (args[0] === "easy") {
+									difficulty = "easy";
+								} else if (args[0] === "normal") {
+									difficulty = "normal";
+								} else if (args[0] === "hard") {
+									difficulty = "hard";
+								} else {
+									return chat.reply("Invalid difficulty");
+								}
+							}
 							if (post.author === chat.author) {
 
 								for (const user of users) {
@@ -201,7 +264,7 @@ export async function BattleGame(post: Post, client: Client) {
 									}
 								}
 
-								battle = new NPCBattle(post);
+								battle = new NPCBattle(post, difficulty);
 								for (const user of users) {
 									const chosenClass = chosenClasses.get(user)!;
 									const p = new chosenClass(battle.teams[0])
@@ -211,7 +274,7 @@ export async function BattleGame(post: Post, client: Client) {
 								}
 
 								
-								chat.reply("Game has started!");
+								chat.reply(`Game has started on ${difficulty}!`);
 							} else {
 								chat.reply("You can't start the game unless you are the owner");
 							}
