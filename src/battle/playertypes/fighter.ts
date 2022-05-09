@@ -1,9 +1,8 @@
-import { Entity } from "../core/entity";
 import { Spell } from "../core/spells";
-import { Charge } from "../spells/charge";
 import { Guard } from "../spells/guard";
 import { Rest } from "../spells/rest";
 import { Slash } from "../spells/slash";
+import { Stab } from "../spells/stab";
 import { Player } from "./player";
 
 export class Fighter extends Player {
@@ -12,6 +11,7 @@ export class Fighter extends Player {
 	maxHealth = 150;
 	spells: Record<string, Spell> = {
 		slash: new Slash(this),
+		stab: new Stab(this),
 		guard: new Guard(this),
 		rest: new Rest(this),
 	}

@@ -5,7 +5,7 @@ import { StatusEffect } from "../core/statuseffect";
 export class Cleanse extends Spell {
 	name = "Cleanse";
 	description = "Remove all negative effects from target user.";
-	manaCost = 50;
+	manaCost = 20;
 	type = SpellTypes.Heal;
 	canUse(target: Entity): string | void {
 		let mana = super.canUse(target);

@@ -11,9 +11,9 @@ export class Healer extends Player {
 	maxHealth = 80;
 	health = 80;
 	spells: Record<string, Spell> = {
+		charge: new Charge(this),
 		heal: new Heal(this),
 		cleanse: new Cleanse(this),
 		rest: new Rest(this),
-		["mana-bomb"]: new ManaBomb(this),
 	};
 }

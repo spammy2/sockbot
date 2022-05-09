@@ -4,23 +4,22 @@ import { randomNumber } from "../util";
 
 export class Slash extends Spell {
 	name = "Slash";
-	description = "Does 20-30 damage";
+	description = "Does 10-15 damage to all players";
 	manaCost = 0;
 	type = SpellTypes.Normal;
-	canUse(target: Entity): string | void {
-		const response = super.canUse(target);
+	canUse(): string | void {
+		const response = super.canUse();
 		if (response) {
 			return response;
 		}
-		if (target.team === this.user.team) {
-			return "Can't attack your own team";
-		}
 	}
-	requiresTarget = true;
-	action(target: Entity) {
+	action() {
 		super.action();
-		const damage = randomNumber(5,10);
-		const actualDamage = this.user.performAttack(damage, target, this);
-		return `Did ${actualDamage} to ${target.name}`;
+	
+		let accumulatedDamage = 0;
+		for (const enemy of this.user.team.battle.teams.find(t => t !== this.user.team)!.entities) {
+			accumulatedDamage += enemy.takeDamage(randomNumber(10, 15), this);
+		}
+		return `Attacked everyone for ${accumulatedDamage} damage`;
 	}
 }

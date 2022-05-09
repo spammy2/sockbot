@@ -15,16 +15,24 @@ export class Entity {
 	spells: Record<string, Spell> = {}
 	isDead = false;
 	
-	canMakeMove = false;
-
 	onDeath(origin: Origin){
 		this.team.battle.onDeath(this, origin);
 	}
 	
+	canMakeMove(){
+		for (const effect of this.statusEffectManager.statusEffects) {
+			if (effect.blocksMoves) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	takeDamage(amount: number, origin?: Origin) {
 		const actualAmount = Math.round(this.statusEffectManager.processIncomingDamage(amount, origin));
 		
 		this.health -= actualAmount;
+		this.statusEffectManager.onDamageTaken(actualAmount, origin);
 		if (this.health <= 0) {
 			this.isDead = true;
 			this.onDeath(origin);
@@ -32,6 +40,13 @@ export class Entity {
 		}
 		return actualAmount;
 	}
+
+	consumeMana(amount: number, origin?: Origin){
+		const prevMana = this.mana;
+		this.mana=Math.max(this.mana-amount, 0);
+		return prevMana - this.mana;
+	}
+
 	getRandomSpell(){
 		const keys = Object.keys(this.spells);
 		if (keys.length === 0) {
@@ -39,6 +54,7 @@ export class Entity {
 		}
 		return this.spells[keys[Math.floor(Math.random() * keys.length)]];
 	}
+	
 	recoverMana(amount: number, origin: Origin) {
 		const prevMana = this.mana;
 		this.mana = Math.min(this.mana + amount, this.maxMana);

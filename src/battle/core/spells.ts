@@ -9,6 +9,8 @@ export enum SpellTypes {
 	Heal,
 	Holy,
 	Water,
+	Ice,
+	Buff,
 }
 
 export abstract class Spell {

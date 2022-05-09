@@ -9,6 +9,15 @@ export class Poison extends Spell {
 	manaCost = 20;
 	type = SpellTypes.Curse;
 	
+	canUse(target: Entity): string | void {
+		let mana = super.canUse(target);
+		if (mana) return mana;
+
+		if (target.team === this.user.team) {
+			return "Can't attack your own team";
+		}
+	}
+
 	requiresTarget = true;
 	action(target: Entity) {
 		super.action();

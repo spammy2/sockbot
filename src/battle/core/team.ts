@@ -6,18 +6,14 @@ export class Team {
 
 	private _currentEntity = 0;
 	get currentEntity(){
-		if (this.entities[this._currentEntity]){
-			return this.entities[this._currentEntity];
-		} else {
-			return this.entities[0];
+		if (!this.entities[this._currentEntity] || !this.entities[this._currentEntity].canMakeMove()){
+			this._currentEntity = 0;
 		}
+		return this.entities[this._currentEntity];
 	}
 
-	get enemyTeam() {
-		return this.battle.teams.find((t) => t !== this) as Team;
+	turnStarted(){
 	}
-
-	turnStarted(){}
 
 	remove(entity: Entity) {
 		if (this.currentEntity === entity) {

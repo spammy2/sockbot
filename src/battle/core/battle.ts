@@ -4,23 +4,26 @@ import { Origin } from "./types";
 
 export abstract class Battle {
 	teams: Team[] = [];
-	currentTeam: Team;
+	private _currentTeam = 0;
 	
+	get currentTeam(){
+		if (!this.teams[this._currentTeam]){
+			this._currentTeam = 0;
+		}
+		return this.teams[this._currentTeam];
+	}
 	announce(message: string) {
 
 	}
+	
+	
 	nextTeam(){
-		let index = this.teams.indexOf(this.currentTeam) + 1;
-		if (index >= this.teams.length) {
-			index = 0;
-		}
-		this.currentTeam = this.teams[index];
+		this._currentTeam++;
 		this.currentTeam.turnStarted();
 	}
 	onDeath(entity: Entity, origin: Origin){
 		
 	}
 	constructor() {
-		this.currentTeam = this.teams[0];
 	}
 }

@@ -10,12 +10,18 @@ export abstract class StatusEffect {
 	hidden = false;
 
 	canAdd = true;
+	
+	/** Whether the presence of this move prevents the user from moving */
+	blocksMoves = false;
 
 	/** Processes damage received */
 	processIncomingDamage(amount: number, origin: Origin): number {return amount};
 
 	/** Processes outbound attacks */
 	processAttack(amount: number, origin: Origin): number {return amount};
+
+	/** When the damage is finally received. Called after processIncomingDamage */
+	onDamageTaken(amount: number, origin: Origin): void {};
 
 	remove(){
 		this.manager.remove(this);

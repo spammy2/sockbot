@@ -25,6 +25,12 @@ export class StatusEffectManager {
 		},amount)
 	}
 
+	onDamageTaken(amount: number, origin: Origin): void {
+		this.statusEffects.forEach(effect => {
+			effect.onDamageTaken(amount, origin);
+		});
+	}
+
 	processAttack(amount: number, origin: Origin): number {
 		return this.statusEffects.reduce((current,v)=>{
 			return v.processAttack(current, origin);
