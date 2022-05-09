@@ -100,7 +100,7 @@ class PVPBattle extends Battle {
 const classes = [Enchanter, Fighter, Healer, Mage];
 
 export async function BattleGame(post: Post, client: Client) {
-	const a = post.text.match(/\+LocalBattle/);
+	const a = post.text.match(/\+BattleGame/);
 	if (a) {
 		let invited = await Promise.all(
 			Array.from(post.text.matchAll(/@[a-zA-Z0-9_]+\<([a-z0-9]+)\>/g)).map((e) => client.getUser(e[1]))
