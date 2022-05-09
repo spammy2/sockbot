@@ -22,7 +22,7 @@ import { randomNumber } from "../util";
 		super.action();
 		const damage = randomNumber(20,30);
 		const actualDamage = this.user.performAttack(damage, target, this);
-		this.user.statusEffectManager.add(Bleeding);
+		target.statusEffectManager.add(Bleeding);
 		return `Did ${actualDamage} to ${target.name} and applied bleeding.`;
 	}
 }

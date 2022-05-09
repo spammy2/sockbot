@@ -216,9 +216,12 @@ export async function BattleGame(post: Post, client: Client) {
 											if (response) {
 												chat.reply(response);
 											}
+											p.tick();
 											if (battle.currentTeam.nextEntity()) {
 												battle.nextTeam();
-											};
+											} else {
+												post.chat(`It is now the ${battle.currentTeam.currentEntity.name}'s turn`);
+											}
 										}
 									} else {
 										chat.reply("You don't have that move.");
