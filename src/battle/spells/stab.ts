@@ -16,6 +16,8 @@ import { randomNumber } from "../util";
 			return "Can't attack your own team";
 		}
 	}
+	
+	requiresTarget = true;
 	action(target: Entity) {
 		super.action();
 		const damage = randomNumber(20,30);
