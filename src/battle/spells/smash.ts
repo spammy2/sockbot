@@ -4,7 +4,7 @@ import { randomNumber } from "../util";
 
 export class Smash extends Spell {
 	name = "Smash";
-	description = "Does 20-30 damage";
+	description = "Heavy hitter.";
 	manaCost = 0;
 	type = SpellTypes.Normal;
 	canUse(target: Entity): string | void {

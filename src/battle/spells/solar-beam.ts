@@ -4,7 +4,7 @@ import { randomNumber } from "../util";
 
  export class SolarBeam extends Spell {
 	name = "Solar Beam";
-	description = "Does 20-40 holy damage to target.";
+	description = "Brings down a beam of light on a target.";
 	manaCost = 50;
 	type = SpellTypes.Holy
 	requiresTarget = true;
